@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="is-scrolling-disabled">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>豆瓣搜索</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      /*清理浏览器默认的高亮*/
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    ul, li {
+      list-style: none;
+    }
+    a {
+      text-decoration: none;
+      color: #42bd56;
+    }
+    input, textarea, button, select, a {
+      -webkit-tap-highlight-color: transparent;
+    }
+    html.is-scrolling-disabled {
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      margin: 0;
+      color: #111;
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
+    .TalionNav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 9999;
+      background: #fff;
+    }
+    .TalionNav-secondary {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: #fff;
+    }
+    .TalionNav-secondary a.close-nav {
+      position: absolute;
+      top: 20px;
+      left: 18px;
+      font-size: 16px;
+      color: #42bd56;
+    }
+    .TalionNav-secondary form {
+      border-bottom: 1px solid #f3f3f3;
+      padding: 15px 18px 15px 60px;
+    }
+    .TalionNav-secondary input[type=search] {
+      box-sizing: border-box;
+      /*重置浏览器对元素的长相定义*/
+      -webkit-appearance: none;
+      border: 0;
+      -webkit-border-right: 3px;
+      border-right: 3px;
+      width: 100%;
+      height: 31px;
+      font-size: 14px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAYAAADFeBvrAAAABGdBTUEAALGPC/xhBQAABUlJREFUaAXdWT1oHEcU1unHR8ih0lZEKsWVkSrLkFaVQIYkJ93JBBUp0hm7sdMJbOlAnR0ICDdJk4AL6++wi8PChXAXMG6CMSmSTpZlFy7EmWBLQvm+5c3ydrTam9nblXQeWM2bN/N+vntvZ2afuro+sVZoB0+9Xv9qd3f3W+i4WCgUBg8ODgZB82HbAm8LvC3Qz/v6+h6Wy+V/g5kc/3gDWltbO7u/v38Njpbh17Cnby8Ast7T07M4OTn51lPWabkzoKWlpRKcuQkgP0FzyUn70Yua0HUHuu5OT083j17mP+MEaHl5eRLG70H9OX8TiRJvAOxqtVpdS1zlMZkICCAKKysrt6DvNukYvR/B24BTj9C/RCpt7e3t8Z3p6u3tHURq8n26ANlv0I/hOYMn0iB7AMZ8pVKpCR2Z9x3EORnoQIp9BuIPPJUYpdvg1Uql0v2JiYmdmPlDrEaj0d9sNmcwwR9owF4AMMsA/gNS8D97zmccC4jRQJotQVEEDIx+AG+hv7//5/Hx8fc+hsza9fX1z3d2dm5gPAs7RcNnT1CI1JV2IhULCGBuw9icNgZ6GylVnpqa+tPipxqurq5+jZSsQzgSLYCZwzs1n0ophA4B4gYA/gqjZJTCyF/d3d2XAWbT8LLoAepLgGpA14jRJ9GppN0oQqepkFszun/w6N2MkbmUNRjaYxNQz0DqSL3B+HyaLb2bSk3Dr3MTdAgG4w+SZplGxthjzx+KNmhL8c+JL4rlRoaAeANAmvHQ1G0hq3dGK7VpsbGg+fSFPmmeCx0CQi5fh4C+AWxzN3NRksUascXjwLQSfLpmBq59CAi/yHeWUC3t1mzpcRqKrZpeDJ94X/RqASDemiE1rCQ/8tBU42MhxSZvH6YNi29m3LIPAMkngF684XoD0ELt0mJzQ+uJ8U1PH6JNyl3UM9hheDc7kRZjO+JbK6cCQFBiPsrM+peGOIE+YjvGt0SXAkB4+SKAcC4EN+ZEyZwmbdu2b63MmpSLADKfAK2E85iPsR3xrZVNk3L8JglbsViMXInCiWMgYmx7+WJS7rX2FQfaF3p8nHSMba/ag4lQ5J2BUq8wZwk4xjYvqs7NRCgCCNIXnDVkv9C2/crHRAAIAs+1EHYW1gBOpNm2sW0/9XEkAMQioCU0xhqAxct9KDbHtCEAeqLHregAkFQ0X6jFZ6SgoVj5k2IzrAwBzCZqDH/7WDYpxwIFv+91u8WChmbkSYstVoTChvT7NRw4EiEgnNCLkGkquQGpzihWfqTY0p/hrCrRJ68WAmKtGVG6Y0nPsjpj8TIfio1ZS/FvqCm8s3gthyEgrkSI76IL932MizgX6ixktNSUcoEUSeq0pVTwGKmpsTMZAcQqC6J0FY++Cg0AVCMPUAKGZSydanT+xzTRoWAEEBlSD5snrdoIQD2DA5mlH3VRJ2yENTmx9whgHivbXmTsxQ/hZ5H+Afqq1obI5VoKFlv76GcA6oG27UrHAqIwi/UA8LsNShRnXqy3HE4N6khANCCRyvXfKQKEn/yX8fTImF0qUImAjPIc/+HF3YwbwGNkxBXQrDS1BerQpmBA6F42ivNIwTnw9eGrl/nQPDR/wTNiNgB5Z2bAY2RMI7j7AtbwEnunCGkN7fzTGD/IJtKY15lFAIg9NNuNlDcgDS7h3/rUyy9NHtKvAOQpnieuF812QLUFSIPLmk4L6tQC4g+UBtSpBpQG1KkH5AuqIwD5gOoYQK6gOgqQCyinmwIVnZaWcKMIvgw6DhB/WBsUDu2HQ0ND33Ou41KOTpsm51SVYEZHR3cN/5Pq/wfEdlFyq1lD2AAAAABJRU5ErkJggg==) no-repeat center rgb(243,243,243);
+      background-size: 17.3333px;
+      padding: 0 5px;
+    }
+    .TalionNav-secondary input[type=search]:focus {
+      background-image: none;
+    }
+    .TalionNav-secondary ul {
+      padding-top: 25px;
+      overflow: hidden;
+      /*flex1.0规范*/
+      display: -webkit-box;
+      /*flex2.0规范*/
+      display: -webkit-flex;
+      display: flex;
+      justify-content: space-around;
+    }
+    .TalionNav-secondary li {
+      width: 33.33%;
+    }
+    .TalionNav-secondary li div {
+      float: left;
+      position: relative;
+      left: 50%;
+      top: 0;
+    }
+    .TalionNav-secondary li a {
+      display: block;
+      text-align: center;
+      margin-bottom: 25px;
+      position: relative;
+      left: -50%;
+      top: 0;
+    }
+    .TalionNav-secondary li strong {
+      display: block;
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 28px;
+    }
+    .TalionNav-secondary li span {
+      display: block;
+      color: #999;
+      height: 17px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .TalionNav-secondary .navBottom {
+      width: 100%;
+      border-bottom: 1px solid #f3f3f3;
+    }
+    .TalionNav-secondary .navBottom .nav-item {
+      border-top: 1px solid #f3f3f3;
+      padding: 13px 0;
+    }
+    .TalionNav-secondary .navBottom .nav-item a {
+      margin: 0 auto;
+      text-align: center;
+      width: 50%;
+      font-size: 15px;
+      color: #42bd56;
+      display: inline-block;
+    }
+    .TalionNav-secondary .navBottom .nav-item a:first-child {
+      border-right: 1px solid #e5e5e5;
+    }
+    .shake {
+      -webkit-animation: shake 2s 1;
+      animation: shake 2s 1;
+    }
+    @keyframes shake {
+      0%,20%,40%,60%,80%,100% {
+        transform: translateX(10px);
+      }
+      0%,10%,30%,50%,70%,90% {
+        transform: translateX(-10px);
+      }
+    }
+  </style>
+</head>
+<body ontouchstart>
+  <div id="TalionNav">
+    <header class="TalinoNav is-active">
+      <div class="TalionNav-secondary">
+        <a href="javascript:;" class="close-nav">关闭</a>
+        <form id="searchForm" action="https://m.douban.com/search" method="get">
+          <div>
+            <input type="search" name="query" id="">
+          </div>
+        </form>
+        <ul>
+          <li>
+            <div>
+              <a href="http://m.douban.com/movie" target="_blank">
+                <strong>电影</strong>
+                <span>影院热映</span>
+              </a>
+              <a href="http://m.douban.com/location">
+                <strong>同城</strong>
+                <span>周末活动</span>
+              </a>
+              <a href="http://read.douban.com/">
+                <strong>阅读</strong>
+                <span>电子书</span>
+              </a>
+              <a href="http://dongxi.douban.com/">
+                <strong>东西</strong>
+                <span>心爱之物</span>
+              </a>
+            </div>
+          </li>
+          <li>
+            <div>
+              <a href="http://m.douban.com/movie" target="_blank">
+                <strong>电影</strong>
+                <span>影院热映</span>
+              </a>
+              <a href="http://m.douban.com/location">
+                <strong>同城</strong>
+                <span>周末活动</span>
+              </a>
+              <a href="http://read.douban.com/">
+                <strong>阅读</strong>
+                <span>电子书</span>
+              </a>
+              <a href="http://dongxi.douban.com/">
+                <strong>东西</strong>
+                <span>心爱之物</span>
+              </a>
+            </div>
+          </li>
+          <li>
+            <div>
+              <a href="http://m.douban.com/movie" target="_blank">
+                <strong>电影</strong>
+                <span>影院热映</span>
+              </a>
+              <a href="http://m.douban.com/location">
+                <strong>同城</strong>
+                <span>周末活动</span>
+              </a>
+              <a href="http://read.douban.com/">
+                <strong>阅读</strong>
+                <span>电子书</span>
+              </a>
+              <a href="http://dongxi.douban.com/">
+                <strong>东西</strong>
+                <span>心爱之物</span>
+              </a>
+            </div>
+          </li>
+        </ul>
+        <div class="navBottom">
+          <div class="nav-item">
+            <a href="#" class="toReg">注册账号</a><a href="#" class="toLogin">登录豆瓣</a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="toPC">使用桌面版</a><a href="#" class="toApp">使用豆瓣App</a>
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
+  <script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+  <script>
+    const closeA = document.querySelector('.close-nav');
+    const searchInput = document.querySelector('input[name="query"]');
+    const searchForm = document.getElementById('searchForm');
+    // window.addEventListener('load', function() {});
+    window.onload = function() {
+      searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const keyword = searchInput.value.trim();
+        if (keyword == '') {
+          // alert('请输入要搜索的内容');
+          searchInput.classList.add('shake');
+        } else {
+          this.submit();
+        }
+      });
+      searchInput.addEventListener('animationend', function() {
+        searchInput.classList.remove('shake');
+      })
+      closeA.addEventListener('click', function() {
+        // 后退
+        // history 对象 你的所有浏览记录
+        // BOM Browser Object Model  DOM
+        history.go(-1);
+      });
+    }
+    // 页面加载完成事件 页面ready 绑定事件， 执行代码
+    // $(function() {
+    //   $('.close-nav').on('click', function() {
+    //     history.go(-1);
+    //   });
+    // });
+  </script>
+</body>
+</html>
